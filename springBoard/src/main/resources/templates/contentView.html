@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Post View</title>
+<link href="image/boot-icon.ico" rel="shortcut icon" type="image/x-icon">
+    <link rel= "stylesheet" type="text/css" href="css/bootstrap.css">
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+<style type="text/css">
+	h2{text-shadow: 1px 1px 1px gray;}
+	span{font-weight: bold;}
+	#contentCounter{font-weight: normal; color: gray;}
+
+	
+	@media all and (min-width:1024px) and (max-width:1980px){
+		.writer{margin-right: 300px;}
+		.writeDate{margin-right: 300px;}
+	}
+	
+	
+	@media all and (min-width:768px) and (max-width:1024px){
+		.writer{margin-right: 180px;}
+		.writeDate{margin-right: 160px;}
+	}
+	
+	
+	@media all and (max-width:768px){
+		span{
+			display: block;
+		}
+	}
+	
+</style>
+</head>
+<body>
+	<div class="contentView">
+	<div class="title">
+		<h2 th:text="|제목 : ${postVo.sb_title}|"></h2>
+	</div>
+	<br/>
+	<div class="info">
+		<span class="writer" th:text="|작성자  : ${postVo.sb_writer}|"></span>
+		<span class="writeDate" th:text="|작성일  : ${postVo.sb_writeDate}|"></span>
+		<span th:text="|조회수 : ${postVo.sb_hit}|"></span>
+	</div>
+	<br/>
+	<div class="content">
+		<p id="preContent" th:text="${postVo.sb_content}"></p></div>
+	<br/>
+	<div>
+      <button id="editPost" class="btn btn-sm btn-primary">글 수정</button>
+      <button id="deletePost" class="btn btn-sm btn-primary">글 삭제</button>
+      <button type="button" class="btn btn-sm btn-primary" onclick="moveIndexPage();">돌아가기</button>
+   	</div>
+	
+	<!-- 댓글 리스트 -->
+	<div class="Comment">
+		<hr/>
+		<span>댓글</span>
+		<br/>
+		
+		<p th:if="${commentList.commentList.size()==0}">작성된 댓글이 없습니다</p>
+		
+		<div th:each="commentVo: ${commentList.commentList}">
+			<div>
+				<hr/>
+				<span th:text="|${commentVo.comment_writer} &nbsp; ${commentVo.comment_writeDate}|"></span>
+				<input id="commentPassword" type="hidden" th:value="${commentVo.comment_password}">
+				<input id="comment_idx" type="hidden" th:value="${commentVo.comment_idx}">
+				
+				<input type="button" class="btn btn-sm btn-primary" value="수정" th:id="${commentVo.comment_idx}" onclick="updateComment(this.id)">
+				<input type="button" class="btn btn-sm btn-primary" value="삭제" th:id="|${commentVo.comment_idx}&${commentList.currentPage}&${postVo.sb_idx}|" onclick="deleteComment(this.id)"/>
+			</div>
+			<div class="line">
+				<span th:text="${commentVo.comment_content}"></span>
+			</div>
+			
+			<!-- 댓글 수정란 -->
+			<div th:id="|update${commentVo.comment_idx}|" style="display: none">
+				<h4>↘  댓글 수정</h4>
+				<form th:action="updateComment" method="get">
+					<input type="hidden" name="comment_idx" th:value="${commentVo.comment_idx}"/>
+					<input type="hidden" name="sb_idx" th:value="${postVo.sb_idx}"/>
+					<input type="hidden" name="currentPage" th:value="${commentList.currentPage}"/>
+					
+					<textarea name="updateText" class="form-control" rows="3" cols="100" maxlength="100" placeholder="내용" th:text="${commentVo.comment_content}" required></textarea><span id="textCounter"></span><br/><br/>
+					<button type="submit">등록</button>
+					<button type="button" th:value="|-${commentVo.comment_idx}|" onclick="updateComment(this.value)">취소</button>
+				</form>
+			</div>
+		</div>
+		
+	
+	<!-- 글쓰기 이동 버튼 -->
+    <nav style="text-align: center;">
+    <ul class="pagination pagination-sm"
+        th:with="start=${commentList.startPage},
+                    last=(${commentList.endPage})">
+        <li>
+            <a th:href="@{/contentView(currentPage=1,sb_idx=${postVo.sb_idx})}" aria-label="First">
+                <span aria-hidden="true">First</span>
+            </a>
+        </li>
+
+
+        <li th:if=${commentList.startPage!=1}>
+            <a th:href="${commentList.currentPage!=1} ? @{/contentView(currentPage=${start-1},sb_idx=${postVo.sb_idx})}" aria-label="Previous">
+                <span aria-hidden="true">&lt;&lt;</span>
+            </a>
+        </li>
+
+
+        <li th:each="page: ${#numbers.sequence(start, last)}" th:class="${currentPage == commentList.currentPage + 1} ? 'active'">
+            <a th:text="${page}" th:href="@{/contentView(currentPage=${page},sb_idx=${postVo.sb_idx})}"></a>
+        </li>
+
+
+        <li th:if="${commentList.endPage!=commentList.totalPage}">
+            <a th:href="${commentList.endPage} ? @{/contentView(currentPage=${last+1},sb_idx=${postVo.sb_idx})}" aria-label="Next">
+                <span aria-hidden="true">&gt;&gt;</span>
+            </a>
+        </li>
+
+        <li>
+            <a th:href="@{/contentView(currentPage=${commentList.totalPage},sb_idx=${postVo.sb_idx})}" aria-label="Last">
+                <span aria-hidden="true">Last</span>
+            </a>
+        </li>
+    </ul>
+	</nav>
+	<hr/>
+		<div id="CommentBefore">
+			<button id="insertCommentButton" class="btn btn-sm btn-primary">댓글달기</button>
+		</div>
+		
+		<div id="CommentAfter" style="display: none">
+			<hr/>
+			
+			<form id="CommentForm" action="CommentSave" method="post">
+				<input id="CommentWriter" class="form-control CommentWriter" name="comment_writer" type="text" width="5" maxlength="5" style="width: 80px; margin-bottom: 20px; display: inline;" placeholder="작성자">
+				<input id="ComentPassword" class="form-control CommentWriter" name="comment_password" type="password" width="5" maxlength="4" style="width: 80px; margin-bottom: 20px; display: inline;" placeholder="비밀번호"><br/>
+				<textarea id="textArea" class="form-control" name="comment_content" rows="3" cols="100" maxlength="100" placeholder="내용"></textarea><span id="contentCounter"> (0/100)</span><br/><br/>
+				<input id="sbIdx" type="hidden" name="sb_idx" value=""/>
+				<input id="currentPage" type="hidden" name="currentPage" value=""/>
+			</form>
+			
+				<button id="saveCommentButton" class="btn btn-sm btn-primary">저장</button>
+				<button id="cancleCommentButton" class="btn btn-sm btn-primary">취소</button>
+		</div>
+	</div>
+	</div>
+</body>
+
+<script type="text/javascript" src="js/springBoardJs.js">
+</script>
+</html>

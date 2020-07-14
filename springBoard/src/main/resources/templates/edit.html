@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Post Edit</title>
+<link href="image/boot-icon.ico" rel="shortcut icon" type="image/x-icon">
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+    <link rel= "stylesheet" type="text/css" href="css/bootstrap.css">
+</head>
+<body>
+<article>
+
+		<div class="container" role="main">
+
+			<h2>Post Edit Page</h2><hr/>
+
+			<form id="postWriteForm" role="form" method="post" action="editPost">
+
+				<div class="mb-3">
+					<label for="postTitle">제목</label>
+					<input type="text" class="form-control" name="sb_title" id="postTitle" placeholder="제목을 입력해 주세요" maxlength="25" th:value="${postVo.sb_title}">
+				</div>
+
+				<br/>
+
+				<div class="mb-3">
+					<label for="postWriter">작성자</label>
+					<input type="text" class="form-control" name="sb_writer" id="postWriter" placeholder="이름을 입력해 주세요" maxlength="5" th:value="${postVo.sb_writer}" readonly="readonly">
+				</div>
+
+				<br/>
+
+				<div class="mb-3">
+					<label for="postContent">내용</label>
+					<textarea class="form-control" rows="5" name="sb_content" id="postContent" placeholder="내용을 입력해 주세요" maxlength="500" th:text="${postVo.sb_content}"></textarea>
+					<span id="textCount">(0/500)</span>
+				</div>
+
+				<br/>
+
+				<div class="mb-3">
+					<label for="postPassword">비밀번호</label>
+					<input type="password" class="form-control" name="sb_password" id="postPassword" placeholder="미 입력시 0000 으로 설정 됩니다." value="" maxlength="10" th:value="${postVo.sb_password}">
+				</div>
+				<br/>
+				<input id="sbIdx" type="hidden" name="sb_idx" th:value="${postVo.sb_idx}"/>
+				<input id="currentPage" type="hidden" name="currentPage" th:value="${currentPage}"/>
+				</form>
+				<span th:text=${currentPage}></span>
+			<div >
+				<button type="button" class="btn btn-sm btn-primary" id="postSave">저장</button>
+				<button type="button" class="btn btn-sm btn-primary" id="postList">목록</button>
+
+			</div>
+
+		</div>
+
+	</article>
+	<script type="text/javascript" src="js/edit.js"></script>
+</body>
+</html>

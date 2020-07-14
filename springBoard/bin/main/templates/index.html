@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Post Board</title>
+	<link href="image/boot-icon.ico" rel="shortcut icon" type="image/x-icon">
+    
+    <link rel= "stylesheet" type="text/css" href="css/bootstrap.css">
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+	
+</head>
+<body class="container">
+
+    <div class="jumbotron">
+        <h2>Spirng Boot | Gradle | Mybatis | MySql | Thymeleaf</h2>
+    </div>
+    
+	<input id="cp" type="hidden" th:value="${postList.currentPage}">
+	<ul class="pagination">
+    	<li>
+    		<a th:href="writePost" aria-label="글쓰기">
+    			<span aria-hidden="true">글쓰기</span>
+    		</a>
+    	</li>
+    </ul>
+    <table class="table">
+        <tr class="ta_header">
+            <th>No</th>
+            <th>Writer</th>
+            <th>Title</th>
+            <th>Hit</th>
+            <th>WriteDate</th>
+        </tr>
+        
+        <tr th:id="${postVo.sb_idx}" class="postTr" th:each="postVo: ${postList.postList}" style="text-align: center;" onclick="showContentView(this.id)">
+            <td th:text="${postVo.sb_idx}"></td>
+            <td th:text="${postVo.sb_writer}"></td>
+            <td th:text="|${postVo.sb_title} (${postVo.sb_commentCount})|"></td>
+            <td th:text="${postVo.sb_hit}"></td>
+            <td th:text="${postVo.sb_writeDate}"></td>
+        </tr>
+    </table>
+
+
+    <nav style="text-align: center;">
+    <ul class="pagination"
+        th:with="start=${postList.startPage},
+                    last=(${postList.endPage})">
+        <li>
+            <a th:href="@{/(currentPage=1)}" aria-label="First">
+                <span aria-hidden="true">First</span>
+            </a>
+        </li>
+
+
+        <li th:if=${postList.startPage!=1}>
+            <a th:href="${postList.currentPage!=1} ? @{/(currentPage=${start-1})}" aria-label="Previous">
+                <span aria-hidden="true">&lt;&lt;</span>
+            </a>
+        </li>
+
+
+        <li th:each="page: ${#numbers.sequence(start, last)}" th:class="${currentPage == postList.currentPage + 1} ? 'active'">
+            <a th:text="${page}" th:href="@{/(currentPage=${page})}"></a>
+        </li>
+
+
+        <li th:if="${postList.endPage!=postList.totalPage}">
+            <a th:href="${postList.endPage} ? @{/(currentPage=${last+1})}" aria-label="Next">
+                <span aria-hidden="true">&gt;&gt;</span>
+            </a>
+        </li>
+
+        <li>
+            <a th:href="@{/(currentPage=${postList.totalPage})}" aria-label="Last">
+                <span aria-hidden="true">Last</span>
+            </a>
+        </li>
+    </ul>
+    
+</nav>
+<script type="text/javascript" src="js/index.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,15 @@
+spring:
+  datasource:
+    url: jdbc:mysql://chw.c9vff66rcmlu.ap-northeast-2.rds.amazonaws.com:3306/spring_board?characterEncoding=utf8
+    username: chw
+    password: sicktiger1!
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+
+
+mybatis:
+  type-aliases-package: com.web.springBoard
+  mapper-locations: mybatis/mapper/**/*.xml
+  
+  
+ 
